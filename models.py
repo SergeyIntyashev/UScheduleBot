@@ -137,3 +137,4 @@ class ClassInfo(BaseModel):
     disciplineName: str
     teacherFIO: str
     audiencePointNumber: str
+    numberDayOfWeek: int
