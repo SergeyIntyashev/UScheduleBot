@@ -130,7 +130,8 @@ class ScheduleInfo(BaseModel):
     body: list[WeekTime]
 
 
-class ScheduleDayInfo(BaseModel):
+class ClassInfo(BaseModel):
+    date: str
     time: str
     lessonType: str
     disciplineName: str
