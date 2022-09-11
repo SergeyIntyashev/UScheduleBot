@@ -108,7 +108,7 @@ class Subject(BaseModel):
     replacementTeachers: list[TeacherInfo]
 
 
-class ScheduleDay:
+class ScheduleDay(BaseModel):
     workPlan: WorkPlan
     subject: list[Subject]
 
@@ -128,3 +128,11 @@ class ScheduleInfo(BaseModel):
     week: str
     headers: list[Header]
     body: list[WeekTime]
+
+
+class ScheduleDayInfo(BaseModel):
+    time: str
+    lessonType: str
+    disciplineName: str
+    teacherFIO: str
+    audiencePointNumber: str
