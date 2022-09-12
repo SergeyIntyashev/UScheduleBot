@@ -57,6 +57,7 @@ async def send_next_week_schedule(message: types.Message):
 
     await message.answer(schedule)
 
+
 async def handle_message(message: types.Message):
     """
     Хендлер вызывается, когда пользователь отправляет боту сообщение
