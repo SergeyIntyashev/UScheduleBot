@@ -67,27 +67,26 @@ async def handle_message(message: types.Message):
     Хендлер вызывается, когда пользователь отправляет боту сообщение
     """
 
-    await message.reply('Извините, такую команду я не могу обработать :(\n'
-                        'Список доступных команд можно посмотреть '
-                        'отправив /help')
+    match message.text:
+        case 'Расписание на текущий день':
+            await send_today_schedule(message)
+        case 'Расписание на текущую неделю':
+            await send_current_week_schedule(message)
+        case 'Расписание на следующую неделю':
+            await send_next_week_schedule(message)
+        case _:
+            await message.reply('Извините, такую команду я не могу обработать '
+                                ':(\n'
+                                'Список доступных команд можно посмотреть '
+                                'отправив /help или воспользоваться кнопками '
+                                'на клавиатуре')
 
 
 def register_handlers(dp: Dispatcher) -> None:
     dp.register_message_handler(send_welcome, commands=['start'])
     dp.register_message_handler(send_help, commands=['help'])
-    dp.register_message_handler(send_today_schedule,
-                                commands=[
-                                    'today',
-                                    'Расписание на текущий день'
-                                ])
+    dp.register_message_handler(send_today_schedule, commands=['today'])
     dp.register_message_handler(send_current_week_schedule,
-                                commands=[
-                                    'current',
-                                    'Расписание на текущую неделю'
-                                ])
-    dp.register_message_handler(send_next_week_schedule,
-                                commands=[
-                                    'next',
-                                    'Расписание на следующую неделю'
-                                ])
+                                commands=['current'])
+    dp.register_message_handler(send_next_week_schedule, commands=['next'])
     dp.register_message_handler(handle_message)
