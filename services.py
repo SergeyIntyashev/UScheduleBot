@@ -1,14 +1,25 @@
+import os
 from collections import namedtuple
+from datetime import datetime
 from functools import lru_cache
+
+import aiohttp
+from dotenv import load_dotenv
 
 from models import ScheduleInfo, ClassInfo, ScheduleDay, Header
 
+load_dotenv()
+
 DayOfWeek = namedtuple('DayOfWeek', ('name', 'number'))
+
+SCHEDULE_URL = os.environ.get('SCHEDULE_URL')
+GROUP_ID = os.environ.get('GROUP_ID')
 
 
 @lru_cache
 def get_days_of_week() -> list[DayOfWeek]:
     """Возвращает список дней недели и порядковый номер"""
+
     return [
         DayOfWeek('MONDAY', 1),
         DayOfWeek('TUESDAY', 2),
@@ -21,6 +32,7 @@ def get_days_of_week() -> list[DayOfWeek]:
 
 def get_week_schedule_days(schedule_info: ScheduleInfo) -> list[ClassInfo]:
     """Возвращает список информации о занятиях за неделю"""
+
     result = []
     headers = schedule_info.headers
 
@@ -45,6 +57,7 @@ def get_week_schedule_days(schedule_info: ScheduleInfo) -> list[ClassInfo]:
 
 def get_date_of_lesson(headers: list[Header], week_day: DayOfWeek) -> str:
     """Возвращет дату и день недели занятия"""
+
     return next(filter(lambda obj: obj.value == week_day, headers)).text
 
 
@@ -53,6 +66,7 @@ def get_schedule_day_info(schedule_day: ScheduleDay,
                           time: str,
                           week_day: DayOfWeek) -> ClassInfo:
     """Возвращает информацию о занятии"""
+
     lesson_type = schedule_day.workPlan.lessonTypes.name
     discipline_name = schedule_day.workPlan.discipline.fullName
     audience_point_number = ''
@@ -78,3 +92,51 @@ def get_schedule_day_info(schedule_day: ScheduleDay,
         audiencePointNumber=audience_point_number,
         numberDayOfWeek=week_day.number
     )
+
+
+def get_query_params(schedule_week: str) -> str:
+    """Возвращает параметры запроса для получения расписания"""
+
+    return f"groupId={GROUP_ID}&scheduleWeek={schedule_week}&date="
+
+
+def get_schedule_message(schedule_info: list[ClassInfo]) -> str:
+    """Возвращает расписание на неделю строкой"""
+
+    return '\n'.join([str(class_info) for class_info in schedule_info])
+
+
+async def get_week_schedule(week: str) -> list[ClassInfo] | None:
+    """Возвращает расписание на неделю"""
+
+    query_params = get_query_params(week)
+    url = f"{SCHEDULE_URL}?{query_params}"
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status != 200:
+                return None
+
+            body = await response.text()
+            schedule_info = ScheduleInfo.parse_raw(body)
+
+            return get_week_schedule_days(schedule_info)
+
+
+async def get_schedule_today(classes_info: list[ClassInfo]) -> str:
+    """Возвращает занятия на текущий день"""
+
+    result = []
+    now = datetime.now()
+    week_day = datetime.isoweekday(now)
+
+    cur_class_info = filter(lambda obj: obj.numberDayOfWeek == week_day,
+                            classes_info)
+
+    while next(cur_class_info):
+        result.append(str(cur_class_info))
+
+    if not result:
+        return 'Сегодня занятий нет'
+
+    return '\n'.join(result)
