@@ -56,3 +56,12 @@ async def send_next_week_schedule(message: types.Message):
     schedule = await services.get_week_schedule(Week.NEXT)
 
     await message.answer(schedule)
+
+async def handle_message(message: types.Message):
+    """
+    Хендлер вызывается, когда пользователь отправляет боту сообщение
+    """
+
+    await message.answer('Извините, такую команду я не могу обработать :(\n'
+                         'Список доступных команд можно посмотреть '
+                         'отправив /help')
