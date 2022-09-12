@@ -146,8 +146,8 @@ class ClassInfo(BaseModel):
     numberDayOfWeek: int
 
     def __str__(self):
-        return f"**{self.date}** **{self.time}**\n" \
-               f"Предмет __{self.disciplineName}__\n" \
-               f"Тип занятия __{self.lessonType}__\n" \
-               f"Аудитория __{self.audiencePointNumber}__\n" \
-               f"Преподаватель __{self.teacherFIO}__\n"
+        return f'<b>{self.date}</b> <b>{self.time}</b>\n' \
+               f'Предмет <em><u>{self.disciplineName}</u></em>\n' \
+               f'Тип занятия <em><u>{self.lessonType}</u></em>\n' \
+               f'Аудитория <em><u>{self.audiencePointNumber}</u></em>\n' \
+               f'Преподаватель <em><u>{self.teacherFIO}</u></em>\n'
