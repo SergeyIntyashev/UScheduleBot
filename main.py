@@ -19,6 +19,9 @@ dp.register_message_handler(handlers.send_help, commands=["help"])
 
 dp.register_message_handler(handlers.send_today_schedule, commands=["today"])
 
+dp.register_message_handler(handlers.send_current_week_schedule,
+                            commands=["current"])
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
