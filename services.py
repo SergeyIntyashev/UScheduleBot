@@ -123,7 +123,7 @@ async def get_week_schedule(week: str) -> list[ClassInfo] | None:
             return get_week_schedule_days(schedule_info)
 
 
-async def get_schedule_today(classes_info: list[ClassInfo]) -> str:
+def get_schedule_today(classes_info: list[ClassInfo]) -> str:
     """Возвращает занятия на текущий день"""
 
     result = []
