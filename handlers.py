@@ -1,7 +1,8 @@
-from aiogram import types
+from aiogram import types, Dispatcher
 from aiogram.types import ParseMode
 
 import services
+from keyboards import keyboard_client
 from models import Week
 
 
@@ -14,7 +15,8 @@ async def send_welcome(message: types.Message):
                          "Я бот помогающий тебе не пропустить пары :)\n"
                          "Я автоматически буду отправлять тебе напоминание "
                          "о парах. \n"
-                         "Чтобы узнать, что я могу еще отправь /help")
+                         "Чтобы узнать, что я могу еще отправь /help",
+                         reply_markup=keyboard_client)
 
 
 async def send_help(message: types.Message):
@@ -68,3 +70,24 @@ async def handle_message(message: types.Message):
     await message.reply('Извините, такую команду я не могу обработать :(\n'
                         'Список доступных команд можно посмотреть '
                         'отправив /help')
+
+
+def register_handlers(dp: Dispatcher) -> None:
+    dp.register_message_handler(send_welcome, commands=['start'])
+    dp.register_message_handler(send_help, commands=['help'])
+    dp.register_message_handler(send_today_schedule,
+                                commands=[
+                                    'today',
+                                    'Расписание на текущий день'
+                                ])
+    dp.register_message_handler(send_current_week_schedule,
+                                commands=[
+                                    'current',
+                                    'Расписание на текущую неделю'
+                                ])
+    dp.register_message_handler(send_next_week_schedule,
+                                commands=[
+                                    'next',
+                                    'Расписание на следующую неделю'
+                                ])
+    dp.register_message_handler(handle_message)
