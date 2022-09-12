@@ -50,7 +50,7 @@ def get_week_schedule_days(schedule_info: ScheduleInfo) -> list[ClassInfo]:
                 )
                 result.append(class_info)
 
-    result.sort(key=lambda obj: obj.numberDayOfWeek)
+    result.sort(key=lambda cl_info: cl_info.numberDayOfWeek)
 
     return result
 
@@ -58,7 +58,7 @@ def get_week_schedule_days(schedule_info: ScheduleInfo) -> list[ClassInfo]:
 def get_date_of_lesson(headers: list[Header], week_day: DayOfWeek) -> str:
     """Возвращет дату и день недели занятия"""
 
-    return next(filter(lambda obj: obj.value == week_day, headers)).text
+    return next(filter(lambda header: header.value == week_day, headers)).text
 
 
 def get_schedule_day_info(schedule_day: ScheduleDay,
@@ -69,7 +69,7 @@ def get_schedule_day_info(schedule_day: ScheduleDay,
 
     lesson_type = schedule_day.workPlan.lessonTypes.name
     discipline_name = schedule_day.workPlan.discipline.fullName
-    audience_point_number = ''
+    audience_point_number = '<em><u>Не назначена</u></em>'
     teacher_fio = ''
 
     if schedule_day.subject:
@@ -106,10 +106,10 @@ def get_schedule_message(classes_info: list[ClassInfo]) -> str:
     return '\n'.join([str(class_info) for class_info in classes_info])
 
 
-async def get_week_schedule(week: str) -> str:
+async def get_week_schedule(week: Week) -> str:
     """Возвращает расписание на неделю"""
 
-    classes_info = await get_classes_info_for_week(week)
+    classes_info = await get_classes_info_for_week(week.value)
 
     if classes_info is None:
         return 'Упс, что-то пошло не так. ' \
@@ -119,7 +119,11 @@ async def get_week_schedule(week: str) -> str:
 
 
 async def get_classes_info_for_week(week: str) -> list[ClassInfo] | None:
+    """
+    Возвращает список занятий на неделю
+    """
     query_params = get_query_params(week)
+
     url = f"{SCHEDULE_URL}?{query_params}"
 
     async with aiohttp.ClientSession() as session:
@@ -136,17 +140,19 @@ async def get_classes_info_for_week(week: str) -> list[ClassInfo] | None:
 async def get_schedule_today() -> str:
     """Возвращает занятия на текущий день"""
 
-    classes_info = await get_week_schedule(Week.CURRENT)
+    classes_info = await get_classes_info_for_week(Week.CURRENT.value)
 
-    result = []
+    if classes_info is None:
+        return 'На этой неделе занятий нет, соответственно и сегодня тоже :)'
+
     now = datetime.now()
     week_day = datetime.isoweekday(now)
 
-    cur_class_info = filter(lambda obj: obj.numberDayOfWeek == week_day,
-                            classes_info)
+    cur_classes_info = list(
+        filter(lambda c_info: c_info.numberDayOfWeek == week_day,
+               classes_info))
 
-    while next(cur_class_info):
-        result.append(str(cur_class_info))
+    result = [str(class_info) for class_info in cur_classes_info]
 
     if not result:
         return 'Сегодня занятий нет'
