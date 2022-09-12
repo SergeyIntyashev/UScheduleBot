@@ -17,7 +17,7 @@ dp.register_message_handler(handlers.send_welcome, commands=["start"])
 
 dp.register_message_handler(handlers.send_help, commands=["help"])
 
-dp.register_message_handler(handlers.schedule_today, commands=["today"])
+dp.register_message_handler(handlers.send_today_schedule, commands=["today"])
 
 
 if __name__ == '__main__':

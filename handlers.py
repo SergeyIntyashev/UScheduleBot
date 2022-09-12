@@ -24,7 +24,7 @@ async def send_help(message: types.Message):
                          "Расписание на cледующую неделю /next\n")
 
 
-async def schedule_today(message: types.Message):
+async def send_today_schedule(message: types.Message):
     """
     Хендлер вызывается, когда пользователь отправляет команду /today
     Отправляет сообщение с расписанием на сегодняшний день
