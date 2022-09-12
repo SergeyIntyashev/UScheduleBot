@@ -45,3 +45,14 @@ async def send_current_week_schedule(message: types.Message):
     schedule = await services.get_week_schedule(Week.CURRENT)
 
     await message.answer(schedule)
+
+
+async def send_next_week_schedule(message: types.Message):
+    """
+    Хендлер вызывается, когда пользователь отправляет команду /next
+    Отправляет сообщение с расписанием на следующую неделю
+    """
+
+    schedule = await services.get_week_schedule(Week.NEXT)
+
+    await message.answer(schedule)
