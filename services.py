@@ -6,7 +6,7 @@ from functools import lru_cache
 import aiohttp
 from dotenv import load_dotenv
 
-from models import ScheduleInfo, ClassInfo, ScheduleDay, Header
+from models import ScheduleInfo, ClassInfo, ScheduleDay, Header, Week
 
 load_dotenv()
 
@@ -100,15 +100,25 @@ def get_query_params(schedule_week: str) -> str:
     return f"groupId={GROUP_ID}&scheduleWeek={schedule_week}&date="
 
 
-def get_schedule_message(schedule_info: list[ClassInfo]) -> str:
+def get_schedule_message(classes_info: list[ClassInfo]) -> str:
     """Возвращает расписание на неделю строкой"""
 
-    return '\n'.join([str(class_info) for class_info in schedule_info])
+    return '\n'.join([str(class_info) for class_info in classes_info])
 
 
-async def get_week_schedule(week: str) -> list[ClassInfo] | None:
+async def get_week_schedule(week: str) -> str:
     """Возвращает расписание на неделю"""
 
+    classes_info = await get_classes_info_for_week(week)
+
+    if classes_info is None:
+        return 'Упс, что-то пошло не так. ' \
+               'Попробуйте запросить расписание позже'
+
+    return get_schedule_message(classes_info)
+
+
+async def get_classes_info_for_week(week: str) -> list[ClassInfo] | None:
     query_params = get_query_params(week)
     url = f"{SCHEDULE_URL}?{query_params}"
 
@@ -123,8 +133,10 @@ async def get_week_schedule(week: str) -> list[ClassInfo] | None:
             return get_week_schedule_days(schedule_info)
 
 
-def get_schedule_today(classes_info: list[ClassInfo]) -> str:
+async def get_schedule_today() -> str:
     """Возвращает занятия на текущий день"""
+
+    classes_info = await get_week_schedule(Week.CURRENT)
 
     result = []
     now = datetime.now()
