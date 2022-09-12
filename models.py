@@ -138,3 +138,10 @@ class ClassInfo(BaseModel):
     teacherFIO: str
     audiencePointNumber: str
     numberDayOfWeek: int
+
+    def __str__(self):
+        return f"**{self.date}** **{self.time}**\n" \
+               f"Предмет __{self.disciplineName}__\n" \
+               f"Тип занятия __{self.lessonType}__\n" \
+               f"Аудитория __{self.audiencePointNumber}__\n" \
+               f"Преподаватель __{self.teacherFIO}__\n"
