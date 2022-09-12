@@ -17,5 +17,8 @@ dp.register_message_handler(handlers.send_welcome, commands=["start"])
 
 dp.register_message_handler(handlers.send_help, commands=["help"])
 
+dp.register_message_handler(handlers.schedule_today, commands=["today"])
+
+
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
