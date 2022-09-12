@@ -1,6 +1,12 @@
+import enum
 from datetime import datetime
 
 from pydantic import BaseModel
+
+
+class Week(enum.Enum):
+    CURRENT: str = 'CURRENT'
+    NEXT: str = 'NEXT'
 
 
 class Header(BaseModel):
