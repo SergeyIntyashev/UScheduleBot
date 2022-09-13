@@ -163,6 +163,10 @@ async def get_schedule_today() -> str:
 
 
 async def check_today_schedule(bot: Bot):
+    """
+    Проверяет расписание на сегодня, если занятия есть, рассылает пользователям
+    подписанным на рассылку, сообщения с занятиями на текущий день
+    """
     today_schedule = await get_schedule_today()
 
     message = f'Привет! Сегодня у тебя пары:\n {today_schedule}'
