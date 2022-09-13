@@ -4,6 +4,7 @@ from aiogram import Bot, Dispatcher, executor
 from dotenv import load_dotenv
 
 from handlers import register_handlers
+from scheduler import on_startup
 
 load_dotenv()
 
@@ -16,4 +17,6 @@ dp = Dispatcher(bot)
 register_handlers(dp)
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dispatcher=dp,
+                           skip_updates=True,
+                           on_startup=on_startup)
