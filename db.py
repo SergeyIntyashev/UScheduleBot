@@ -44,3 +44,6 @@ class DBHelper:
         args = (user_id,)
         res = self.conn.execute(stmt, args)
         return res.fetchone() is not None
+
+
+db = DBHelper()
