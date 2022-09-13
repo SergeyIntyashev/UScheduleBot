@@ -14,9 +14,9 @@ async def send_welcome(message: types.Message):
     """
     await message.answer("Привет!\n"
                          "Я бот помогающий тебе не пропустить пары :)\n"
-                         "Я автоматически буду отправлять тебе напоминание "
+                         "Я могу автоматически отправлять тебе напоминание "
                          "о парах. \n"
-                         "Чтобы узнать, что я могу еще отправь /help",
+                         "Чтобы узнать, что я могу еще - отправь /help",
                          reply_markup=keyboard_client)
 
 
@@ -115,6 +115,7 @@ async def handle_message(message: types.Message):
 
 
 def register_handlers(dp: Dispatcher) -> None:
+    """Регистрирует команды в диспатчере"""
     dp.register_message_handler(send_welcome, commands=['start'])
     dp.register_message_handler(send_help, commands=['help'])
     dp.register_message_handler(send_today_schedule, commands=['today'])
