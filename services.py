@@ -4,8 +4,10 @@ from datetime import datetime
 from functools import lru_cache
 
 import aiohttp
+from aiogram import Bot
 from dotenv import load_dotenv
 
+from db import db_helper
 from models import ScheduleInfo, ClassInfo, ScheduleDay, Header, Week
 
 load_dotenv()
@@ -143,7 +145,7 @@ async def get_schedule_today() -> str:
     classes_info = await get_classes_info_for_week(Week.CURRENT.value)
 
     if classes_info is None:
-        return 'На этой неделе занятий нет, соответственно и сегодня тоже :)'
+        return 'Сегодня занятий нет'
 
     now = datetime.now()
     week_day = datetime.isoweekday(now)
@@ -158,3 +160,13 @@ async def get_schedule_today() -> str:
         return 'Сегодня занятий нет'
 
     return '\n'.join(result)
+
+
+async def check_today_schedule(bot: Bot):
+    today_schedule = await get_schedule_today()
+
+    message = f'Привет! Сегодня у тебя пары:\n {today_schedule}'
+
+    if today_schedule != 'Сегодня занятий нет':
+        for user_id in db_helper.get_user_ids():
+            await bot.send_message(user_id, message)
