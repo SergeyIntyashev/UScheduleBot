@@ -46,4 +46,4 @@ class DBHelper:
         return res.fetchone() is not None
 
 
-db = DBHelper()
+db_helper = DBHelper()
