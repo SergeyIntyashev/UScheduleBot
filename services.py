@@ -4,7 +4,7 @@ from datetime import datetime
 from functools import lru_cache
 
 import aiohttp
-from aiogram import Bot
+from aiogram import Bot, Dispatcher
 from dotenv import load_dotenv
 
 from db import db_helper
@@ -16,6 +16,7 @@ DayOfWeek = namedtuple('DayOfWeek', ('name', 'number'))
 
 SCHEDULE_URL = os.environ.get('SCHEDULE_URL')
 GROUP_ID = os.environ.get('GROUP_ID')
+ADMIN_ID = os.environ.get('ADMIN_ID')
 
 
 @lru_cache
@@ -174,3 +175,7 @@ async def check_today_schedule(bot: Bot):
     if today_schedule != 'Сегодня занятий нет':
         for user_id in db_helper.get_user_ids():
             await bot.send_message(user_id, message)
+
+
+async def notify_admin_on_shutdown(dp: Dispatcher):
+    await dp.bot.send_message(ADMIN_ID, 'Ой-ой, я выключаюсь :(')
