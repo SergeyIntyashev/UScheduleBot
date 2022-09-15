@@ -66,7 +66,7 @@ async def send_next_week_schedule(message: types.Message):
     await message.answer(schedule, parse_mode=ParseMode.HTML)
 
 
-async def remind_schedule(message: types.Message):
+async def subscribe_to_schedule(message: types.Message):
     """Добавляет пользователя в БД для отправки напоминания о парах"""
 
     user_id = message.from_user.id
@@ -75,10 +75,12 @@ async def remind_schedule(message: types.Message):
         return await message.answer('Вы уже добавлены в рассылку')
 
     db_helper.add_user(user_id)
-    await message.answer('Вы добавлены в рассылку')
+    await message.answer('Вы добавлены в рассылку.\n'
+                         'Рассылка осуществляется в 21:00 СМР '
+                         'за день до занятий')
 
 
-async def not_remind_schedule(message: types.Message):
+async def unsubscribe_from_schedule(message: types.Message):
     """Удаляет пользователя из БД, чтобы не получать напоминания о парах"""
 
     user_id = message.from_user.id
@@ -103,9 +105,9 @@ async def handle_message(message: types.Message):
         case 'Расписание на следующую неделю':
             await send_next_week_schedule(message)
         case 'Напоминать о парах':
-            await remind_schedule(message)
+            await subscribe_to_schedule(message)
         case 'Не напоминать о парах':
-            await not_remind_schedule(message)
+            await unsubscribe_from_schedule(message)
         case _:
             await message.reply('Извините, такую команду я не могу обработать '
                                 ':(\n'
@@ -122,6 +124,7 @@ def register_handlers(dp: Dispatcher) -> None:
     dp.register_message_handler(send_current_week_schedule,
                                 commands=['current'])
     dp.register_message_handler(send_next_week_schedule, commands=['next'])
-    dp.register_message_handler(remind_schedule, commands=['subscribe'])
-    dp.register_message_handler(not_remind_schedule, commands=['unsubscribe'])
+    dp.register_message_handler(subscribe_to_schedule, commands=['subscribe'])
+    dp.register_message_handler(unsubscribe_from_schedule,
+                                commands=['unsubscribe'])
     dp.register_message_handler(handle_message)
