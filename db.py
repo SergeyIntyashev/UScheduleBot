@@ -13,6 +13,10 @@ class DBHelper:
         self.conn = sqlite3.connect('schedule.sqlite')
         self.__setup()
 
+    def __del__(self):
+        self.conn.close()
+        self.__instance = None
+
     def __setup(self) -> None:
         stmt = 'CREATE TABLE IF NOT EXISTS users (id text)'
         self.conn.execute(stmt)
