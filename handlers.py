@@ -39,7 +39,7 @@ async def send_today_schedule(message: types.Message):
     Отправляет сообщение с расписанием на сегодняшний день
     """
 
-    schedule = await services.get_schedule_today()
+    schedule = await services.get_schedule_for_day()
 
     await message.answer(schedule, parse_mode=ParseMode.HTML)
 
