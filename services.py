@@ -1,10 +1,11 @@
 import os
 from collections import namedtuple
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import lru_cache
 
 import aiohttp
 from aiogram import Bot, Dispatcher
+from aiogram.types import ParseMode
 from dotenv import load_dotenv
 
 from db import db_helper
@@ -140,16 +141,15 @@ async def get_classes_info_for_week(week: str) -> list[ClassInfo] | None:
             return get_week_schedule_days(schedule_info)
 
 
-async def get_schedule_today() -> str:
-    """Возвращает занятия на текущий день"""
+async def get_schedule_for_day(date: datetime = datetime.now()) -> str:
+    """Возвращает занятия на день, по умолчанию на текущий"""
 
     classes_info = await get_classes_info_for_week(Week.CURRENT.value)
 
     if classes_info is None:
         return 'Сегодня занятий нет'
 
-    now = datetime.now()
-    week_day = datetime.isoweekday(now)
+    week_day = datetime.isoweekday(date)
 
     cur_classes_info = list(
         filter(lambda c_info: c_info.numberDayOfWeek == week_day,
@@ -163,18 +163,21 @@ async def get_schedule_today() -> str:
     return '\n'.join(result)
 
 
-async def check_today_schedule(bot: Bot):
+async def check_tomorrow_schedule(bot: Bot):
     """
     Проверяет расписание на сегодня, если занятия есть, рассылает пользователям
     подписанным на рассылку, сообщения с занятиями на текущий день
     """
-    today_schedule = await get_schedule_today()
 
-    message = f'Привет! Сегодня у тебя пары:\n {today_schedule}'
+    tomorrow_date = datetime.now() + timedelta(days=1)
 
-    if today_schedule != 'Сегодня занятий нет':
+    tomorrow_schedule = await get_schedule_for_day(tomorrow_date)
+
+    message = f'Привет! <b>Завтра</b> у тебя пары:\n {tomorrow_schedule}'
+
+    if tomorrow_schedule != 'Сегодня занятий нет':
         for user_id in db_helper.get_user_ids():
-            await bot.send_message(user_id, message)
+            await bot.send_message(user_id, message, parse_mode=ParseMode.HTML)
 
 
 async def notify_admin_on_shutdown(dp: Dispatcher):
