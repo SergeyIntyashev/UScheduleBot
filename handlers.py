@@ -50,7 +50,7 @@ async def send_current_week_schedule(message: types.Message):
     Отправляет сообщение с расписанием на текущую неделю
     """
 
-    schedule = await services.get_week_schedule(Week.CURRENT)
+    schedule = await services.get_week_schedule(Week.CURRENT.value)
 
     await message.answer(schedule, parse_mode=ParseMode.HTML)
 
@@ -61,7 +61,7 @@ async def send_next_week_schedule(message: types.Message):
     Отправляет сообщение с расписанием на следующую неделю
     """
 
-    schedule = await services.get_week_schedule(Week.NEXT)
+    schedule = await services.get_week_schedule(Week.NEXT.value)
 
     await message.answer(schedule, parse_mode=ParseMode.HTML)
 
