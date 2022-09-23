@@ -110,10 +110,10 @@ def get_schedule_message(classes_info: list[ClassInfo]) -> str:
     return '\n'.join([str(class_info) for class_info in classes_info])
 
 
-async def get_week_schedule(week: Week) -> str:
+async def get_week_schedule(week: str) -> str:
     """Возвращает расписание на неделю"""
 
-    classes_info = await get_classes_info_for_week(week.value)
+    classes_info = await get_classes_info_for_week(week)
 
     if classes_info is None:
         return 'Упс, что-то пошло не так. ' \
@@ -141,10 +141,13 @@ async def get_classes_info_for_week(week: str) -> list[ClassInfo] | None:
             return get_week_schedule_days(schedule_info)
 
 
-async def get_schedule_for_day(date: datetime = datetime.now()) -> str:
+async def get_schedule_for_day(date: datetime | None = None) -> str:
     """Возвращает занятия на день, по умолчанию на текущий"""
 
-    classes_info = await get_classes_info_for_week(Week.CURRENT.value)
+    if date is None:
+        date = datetime.now()
+
+    classes_info = await get_classes_info_for_week(Week.CURRENT)
 
     if classes_info is None:
         return 'Сегодня занятий нет'
@@ -173,7 +176,7 @@ async def check_tomorrow_schedule(bot: Bot):
 
     tomorrow_schedule = await get_schedule_for_day(tomorrow_date)
 
-    message = f'Привет! <b>Завтра</b> у тебя пары:\n {tomorrow_schedule}'
+    message = f'Привет! <b>Завтра</b> у тебя пары:\n{tomorrow_schedule}'
 
     if tomorrow_schedule != 'Сегодня занятий нет':
         for user_id in db_helper.get_user_ids():
