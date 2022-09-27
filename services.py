@@ -147,7 +147,7 @@ async def get_schedule_for_day(date: datetime | None = None) -> str:
     if date is None:
         date = datetime.now()
 
-    classes_info = await get_classes_info_for_week(Week.CURRENT)
+    classes_info = await get_classes_info_for_week(Week.CURRENT.value)
 
     if classes_info is None:
         return 'Сегодня занятий нет'
