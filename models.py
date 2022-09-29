@@ -1,5 +1,4 @@
 import enum
-from datetime import datetime
 
 from pydantic import BaseModel
 
@@ -85,24 +84,8 @@ class Audience(BaseModel):
 
 class TeacherInfo(BaseModel):
     id: int
-    orionId: int
-    name: str | None
-    patronymic: str | None
-    surname: str | None
-    status: str
-    section: int
-    company: int
-    birthDate: datetime | None
     teacher: str
-    teacherCode: str | None
-    position: str | None
-    code: str
-    codeFlOneCZp: str
-    codeLms: str
-    rank: str
-    scienceDegree: str
     fio: str
-    currentAudience: str | None
 
 
 class Subject(BaseModel):
