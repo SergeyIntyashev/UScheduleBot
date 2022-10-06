@@ -81,7 +81,7 @@ def get_schedule_day_info(schedule_day: ScheduleDay,
 
         if subject.audiences:
             audience = subject.audiences[0]
-            audience_point_number = audience.accessPointName
+            audience_point_number = audience.name
 
         if subject.replacementTeachers:
             replacement_teacher = subject.replacementTeachers[0]
@@ -101,7 +101,8 @@ def get_schedule_day_info(schedule_day: ScheduleDay,
 def get_query_params(schedule_week: str) -> str:
     """Возвращает параметры запроса для получения расписания"""
 
-    return f"groupId={GROUP_ID}&scheduleWeek={schedule_week}&date="
+    return f"groupId={GROUP_ID}&scheduleWeek={schedule_week}" \
+           f"&date={datetime.now().strftime('%Y-%m-%d')}"
 
 
 def get_schedule_message(classes_info: list[ClassInfo]) -> str:
@@ -114,10 +115,6 @@ async def get_week_schedule(week: str) -> str:
     """Возвращает расписание на неделю"""
 
     classes_info = await get_classes_info_for_week(week)
-
-    if classes_info is None:
-        return 'Упс, что-то пошло не так. ' \
-               'Попробуйте запросить расписание позже'
 
     return get_schedule_message(classes_info)
 
@@ -133,7 +130,7 @@ async def get_classes_info_for_week(week: str) -> list[ClassInfo] | None:
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             if response.status != 200:
-                return None
+                raise SystemError
 
             body = await response.text()
             schedule_info = ScheduleInfo.parse_raw(body)
@@ -148,9 +145,6 @@ async def get_schedule_for_day(date: datetime | None = None) -> str:
         date = datetime.now()
 
     classes_info = await get_classes_info_for_week(Week.CURRENT.value)
-
-    if classes_info is None:
-        return 'Сегодня занятий нет'
 
     week_day = datetime.isoweekday(date)
 
@@ -178,9 +172,8 @@ async def check_tomorrow_schedule(bot: Bot):
 
     message = f'Привет! <b>Завтра</b> у тебя пары:\n{tomorrow_schedule}'
 
-    if tomorrow_schedule != 'Сегодня занятий нет':
-        for user_id in db_helper.get_user_ids():
-            await bot.send_message(user_id, message, parse_mode=ParseMode.HTML)
+    for user_id in db_helper.get_user_ids():
+        await bot.send_message(user_id, message, parse_mode=ParseMode.HTML)
 
 
 async def notify_admin_on_shutdown(dp: Dispatcher):
