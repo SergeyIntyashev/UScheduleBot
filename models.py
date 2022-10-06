@@ -71,15 +71,6 @@ class WorkPlan(BaseModel):
 class Audience(BaseModel):
     id: int
     name: str
-    type: str | None
-    typeName: str | None
-    capacity: int
-    accessPoint: int
-    accessPointName: str
-    code: str
-    typeAudiences: str
-    house: str
-    itemName: str
 
 
 class TeacherInfo(BaseModel):
