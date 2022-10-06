@@ -5,6 +5,7 @@ import services
 from db import db_helper
 from keyboards import keyboard_client
 from models import Week
+from utils import log_errors
 
 
 async def send_welcome(message: types.Message):
@@ -33,6 +34,7 @@ async def send_help(message: types.Message):
                          )
 
 
+@log_errors
 async def send_today_schedule(message: types.Message):
     """
     Хендлер вызывается, когда пользователь отправляет команду /today
@@ -44,6 +46,7 @@ async def send_today_schedule(message: types.Message):
     await message.answer(schedule, parse_mode=ParseMode.HTML)
 
 
+@log_errors
 async def send_current_week_schedule(message: types.Message):
     """
     Хендлер вызывается, когда пользователь отправляет команду /current
@@ -55,6 +58,7 @@ async def send_current_week_schedule(message: types.Message):
     await message.answer(schedule, parse_mode=ParseMode.HTML)
 
 
+@log_errors
 async def send_next_week_schedule(message: types.Message):
     """
     Хендлер вызывается, когда пользователь отправляет команду /next
@@ -66,6 +70,7 @@ async def send_next_week_schedule(message: types.Message):
     await message.answer(schedule, parse_mode=ParseMode.HTML)
 
 
+@log_errors
 async def subscribe_to_schedule(message: types.Message):
     """Добавляет пользователя в БД для отправки напоминания о парах"""
 
@@ -80,6 +85,7 @@ async def subscribe_to_schedule(message: types.Message):
                          'за день до занятий')
 
 
+@log_errors
 async def unsubscribe_from_schedule(message: types.Message):
     """Удаляет пользователя из БД, чтобы не получать напоминания о парах"""
 
@@ -92,6 +98,7 @@ async def unsubscribe_from_schedule(message: types.Message):
     await message.answer('Вы удалены из рассылки')
 
 
+@log_errors
 async def handle_message(message: types.Message):
     """
     Хендлер вызывается, когда пользователь отправляет боту сообщение
