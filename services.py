@@ -170,10 +170,11 @@ async def check_tomorrow_schedule(bot: Bot):
 
     tomorrow_schedule = await get_schedule_for_day(tomorrow_date)
 
-    message = f'Привет! <b>Завтра</b> у тебя пары:\n{tomorrow_schedule}'
+    if tomorrow_schedule != 'Сегодня занятий нет':
+        message = f'Привет! <b>Завтра</b> у тебя пары:\n{tomorrow_schedule}'
 
-    for user_id in db_helper.get_user_ids():
-        await bot.send_message(user_id, message, parse_mode=ParseMode.HTML)
+        for user_id in db_helper.get_user_ids():
+            await bot.send_message(user_id, message, parse_mode=ParseMode.HTML)
 
 
 async def notify_admin_on_shutdown(dp: Dispatcher):
